@@ -1,12 +1,12 @@
 %% init
-clear all
+clear
 close all
 
 
 %% Given
-% [V,F,P,W] = generateProblem_SmallExample();
-rng(1)
-[V,F,P,W] = generateProblem_RandomExample(90,5);
+[V,F,P,W] = generateProblem_SmallExample();
+% rng(1)
+% [V,F,P,W] = generateProblem_RandomExample(90,30);
 
 % V - nx2 matrix of the location of n vertices
 % F - mx3 matrix where the i'th row contains the indices of the i'th triangle
@@ -58,5 +58,6 @@ W_ext_construction = constructWeightsOnExtension(bndInd, bndInd_ext, bndIndConve
 % embed
 [X_ext_construction, G_ext_construction, ~] = solveDiscreteLaplace(W_ext_construction, P_ext);
 
-%% plots
+
+%% plot
 drawAllFigures()

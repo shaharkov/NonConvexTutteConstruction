@@ -1,7 +1,8 @@
+%% draw all figures
 drawLabels = true;
-% if size(V,1)>10
-%     drawLabels = false;
-% end
+if size(V,1)>10
+    drawLabels = false;
+end
 
 % input triangulation
 figure;
@@ -37,7 +38,7 @@ title(sprintf('(E1) Embedding of given triangulation, weights and boundary P\nAr
 figure;
 patch('vertices',P,'faces',find(bndInd)','edgecolor','r','facecolor','none');
 hold on;
-patch('vertices',P,'faces',F_add,'facecolor',0.9*[1 1 1]);
+patch('vertices',P,'faces',F_add,'facecolor',0.9*[0 1 0],'facealpha',0.6);
 axis equal; axis off;
 title('Adding triangles to the polygon to extend to the convex hull');
 
@@ -64,28 +65,49 @@ drawEdgeWeights(X_ext_construction,W_ext_construction,drawLabels);
 axis equal; axis off;
 title(sprintf('(E3) Embedding of the extended triangulation onto the convex hull of P\nwith weights constructed to coincide with original embedding onto P'));
 
+
+%% single figure summary
 figure;
-subplot(3,2,1);
+subplot(2,4,1);
 patch('vertices',V,'faces',F,'facecolor',0.9*[1 1 1]);
-axis equal; axis off;
+axis equal; axis off; axis tight;
 title('(T)');
-subplot(3,2,2);
+
+subplot(2,4,5);
 patch('vertices',X,'faces',F,'facecolor',0.9*[1 1 1]);
-axis equal; axis off;
+axis equal; axis off; axis tight;
 title('(E1)');
-subplot(3,2,3);
+
+subplot(2,4,2);
+patch('vertices',V,'faces',F,'facecolor',0.9*[1 1 1]);
+hold on;
+patch('vertices',V,'faces',F_add,'facecolor',0.9*[0 1 0],'facealpha',0.6);
+axis equal; axis off; axis tight;
+title('(T) extend');
+
+subplot(2,4,6);
+patch('vertices',X,'faces',F,'facecolor',0.9*[1 1 1]);
+hold on;
+patch('vertices',X,'faces',F_add,'facecolor',0.9*[0 1 0],'facealpha',0.6);
+axis equal; axis off; axis tight;
+title('(E1) extend');
+
+subplot(2,4,3);
 patch('vertices',X_ext_uniform,'faces',F_ext,'facecolor',0.9*[1 1 1]);
-axis equal; axis off;
+axis equal; axis off; axis tight;
 title('(E2)');
-subplot(3,2,4);
+
+subplot(2,4,7);
 patch('vertices',X_ext_construction,'faces',F_ext,'facecolor',0.9*[1 1 1]);
-axis equal; axis off;
+axis equal; axis off; axis tight;
 title('(E3)');
-subplot(3,2,5);
+
+subplot(2,4,4);
 patch('vertices',X_ext_uniform,'faces',F,'facecolor',0.9*[1 1 1]);
-axis equal; axis off;
+axis equal; axis off; axis tight;
 title('(E2) restricted');
-subplot(3,2,6);
+
+subplot(2,4,8);
 patch('vertices',X_ext_construction,'faces',F,'facecolor',0.9*[1 1 1]);
-axis equal; axis off;
+axis equal; axis off; axis tight;
 title('(E3) restricted');

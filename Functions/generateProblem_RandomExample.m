@@ -1,7 +1,7 @@
 function [V,F,P,W] = generateProblem_RandomExample(N,K)
 
 % initial triangulation
-V = rand(N,2);
+V = randn(N,2);
 DT = delaunayTriangulation(V);
 
 % remove k boundary triangles

@@ -1,31 +1,29 @@
-function W_ext_construction = constructWeightsOnExtension(bndInd, bndInd_ext, bndIndConvex, bndIndReflex, ...
+function W_ext_construction = constructWeightsOnExtension(bndInd, bndInd_ext, ...
     W, W_ext_uniform,...
     X, P, G)
 
 
-
-% classify the vertices of the extended triangulation: 
-% (1) boundary of the extended triangulation:
-v_bnd = bndInd_ext;
-% (2) interior to the original triangulation:
-v_int = ~bndInd;
-% (3) interior to extension but boundary of original:
-v_intbnd = ~bndInd_ext & bndInd;
-% (3a) convex wrt to P:
-v_intbnd_convex = v_intbnd & bndIndConvex;
-% (3b) reflex wrt to P:
-v_intbnd_reflex = v_intbnd & bndIndReflex;
+% classify boundary vertices into convex/reflex
+[bndIndReflex,bndIndConvex] = classifyReflexConvex(P, find(bndInd));
 
 % constuct weights, case by case:
 W_ext_construction = zeros(size(W));
 
-% (1) take uniform weights - they don't matter as these vertices are fixed:
+% (1) boundary of the extended triangulation.
+% take uniform weights - they don't matter as these vertices are fixed:
+v_bnd = bndInd_ext;
 W_ext_construction(v_bnd,:) = W_ext_uniform(v_bnd,:);
 
-% (2) copy the original weights:
+% (2) interior to the original triangulation.
+% copy the original weights:
+v_int = ~bndInd;
 W_ext_construction(v_int,:) = W(v_int,:);
 
+% (3) interior to extension but boundary of original:
+v_intbnd = ~bndInd_ext & bndInd;
+
 % (3a) convex wrt to P:
+v_intbnd_convex = v_intbnd & bndIndConvex;
 for ii = find(v_intbnd_convex)'
     if isempty(ii)
         break
@@ -42,6 +40,7 @@ for ii = find(v_intbnd_convex)'
 end
 
 % (3b) convex wrt to P:
+v_intbnd_reflex = v_intbnd & bndIndReflex;
 for ii = find(v_intbnd_reflex)'
     % for vertex ii (was on boundary, now interior) find old boundary
     % neighbors and new neighbors (all are boundary thus have known coordinates):

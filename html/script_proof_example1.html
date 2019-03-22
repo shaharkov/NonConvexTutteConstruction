@@ -1,0 +1,232 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>script_proof_example1</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-03-22"><meta name="DC.source" content="script_proof_example1.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Initialization</a></li><li><a href="#2">Input -- (V,F)</a></li><li><a href="#6">Compute embedding into P -- (X,F)</a></li><li><a href="#10">Extend the triangulation -- F -&gt; F'</a></li><li><a href="#16">Compute an new embedding (drawing) of the extended triangulation -- (U,F')</a></li><li><a href="#19">Construct new weights on F' and embed -- (Z,F')</a></li><li><a href="#26">Summary</a></li></ul></div><h2 id="1">Initialization</h2><pre class="codeinput">clear
+close <span class="string">all</span>
+addpath <span class="string">Functions</span> <span class="string">Draw</span>
+drawLabels = true;
+</pre><h2 id="2">Input -- (V,F)</h2><pre class="codeinput">[V,F,P,W] = generateProblem_SmallExample();
+</pre><pre>V - nx2 matrix of the coordinates of n vertices
+F - mx3 matrix where the i'th row contains the indices of the i'th triangle
+P - nx2 matrix with boundary contraints (prescribing the coordinates of boundary vertices)
+       vertices that are not constrained (interior) are NaN
+W - nxn weighted adjacency matrix - the i,j entry is the weight of the edge connecting i to j (zero if no edge)</pre><p>We <b>assume</b> that the problem is set up such that the cone condition holds:  Given an embedding such that the cone condition holds, the goal of this code is to compute an extended graph + weights that enable the reduction to classic Tutte's proof.</p><p>Draw input</p><pre class="codeinput">drawInput();
+</pre><img vspace="5" hspace="5" src="script_proof_example1_01.png" alt=""> <h2 id="6">Compute embedding into P -- (X,F)</h2><p>Solve a Laplace linear system with weights W and boundary constraints P</p><pre class="codeinput">[X, G, bndInd] = solveDiscreteLaplace(W, P);
+</pre><pre>X - embedding coordinates
+G - the action of the Laplacian at each vertex w.r.t. X
+bndInd - indicator vector of boundary vertices</pre><p>Draw P, illustrate the cone condition and the target embedding</p><pre class="codeinput">drawBoundary();
+drawBoundaryWithForces();
+drawTargetEmbedding();
+</pre><img vspace="5" hspace="5" src="script_proof_example1_02.png" alt=""> <img vspace="5" hspace="5" src="script_proof_example1_03.png" alt=""> <img vspace="5" hspace="5" src="script_proof_example1_04.png" alt=""> <h2 id="10">Extend the triangulation -- F -&gt; F'</h2><p>Extend the triangulation by adding ONLY new triangles (=edges)</p><pre class="codeinput">[F_add, P_ext] = extendTriangulation(P, find(bndInd));
+</pre><pre>F_add - new triangles, obtained by triangulating the difference between
+        the convex hull of P and P itself
+P_ext - the boundary of the extension = convex hull of P</pre><p>Draw convex hull and new triangles</p><pre class="codeinput">drawBoundaryExtension();
+</pre><img vspace="5" hspace="5" src="script_proof_example1_05.png" alt=""> <p>The extended triangulation F' is then the concatenation of the original triangles F and new triangles F_add:</p><pre class="codeinput">F_ext = [F;
+    F_add];
+</pre><p>F' defines a 3-connected triagulation <b>graph</b> that has disk topology.</p><p>However, the drawing (V,F'), with the new triangles added to the input triangulation, is <b>not</b> a valid drawing</p><pre class="codeinput">drawInputExtension();
+</pre><img vspace="5" hspace="5" src="script_proof_example1_06.png" alt=""> <h2 id="16">Compute an new embedding (drawing) of the extended triangulation -- (U,F')</h2><p>Use Tutte's graph embedding with uniform weights and boudnary vertices uniformly spaced on the circle</p><pre class="codeinput">W_ext_uniform = computeUniformWeights(F_ext);
+P_ext_uniform = mapPolygonToCircle(P_ext);
+</pre><p>Solve a Laplace linear system with uniform weights and boudnary vertices uniformly spaced on the circle</p><pre class="codeinput">[U, ~, bndInd_ext] = solveDiscreteLaplace(W_ext_uniform, P_ext_uniform);
+</pre><p>Draw (U,F')</p><pre class="codeinput">drawAuxiliaryEmbedding();
+</pre><img vspace="5" hspace="5" src="script_proof_example1_07.png" alt=""> <h2 id="19">Construct new weights on F' and embed -- (Z,F')</h2><p>Find weights on the extended triangulation for which the embedding (onto the convex hull) coincides with the desired embedding (onto the non-convex polygon)</p><pre class="codeinput">W_ext_construction = constructWeightsOnExtension(bndInd, bndInd_ext,<span class="keyword">...</span>
+    W, W_ext_uniform,<span class="keyword">...</span>
+    X, P, G);
+</pre><pre class="codeoutput">
+Optimal solution found.
+
+</pre><p>The construction follows the cases in the proof:</p><pre>- For interior vertices, we use the input weights as-is.
+- For boundary vertices we may choose any arbitrary weights, as these are constrained
+The remaining vertices were boundary vertices of the original, unextended input domain, that became interior via the extension.
+- If such vertex was originally a boundary reflex vertex on the input mesh, the cone condition implies that proper weights exist for it in the extension.
+- If such vertex was originally a boundary convex vertex, the edges it connects to in the extension span more than 180 degrees, and thus proper weights also exist.</pre><p>It is evident that the discrete Laplace equation (stemming from the Tutte&#8217;s embedding) defined by the above weights is exactly satisfied. The solution to Tutte&#8217;s embedding is unique, hence, solving it using these constructed weights, with the same boundary conditions will yield the exact given input.</p><p>Solve a Laplace linear system with weights constructed and boundary constraints P'</p><pre class="codeinput">[Z, ~, ~] = solveDiscreteLaplace(W_ext_construction, P_ext);
+</pre><p>Draw (Z,F')</p><pre class="codeinput">drawConstructedEmbedding();
+</pre><img vspace="5" hspace="5" src="script_proof_example1_08.png" alt=""> <p>By construction we have Z=X</p><h2 id="26">Summary</h2><pre class="codeinput">drawSummary();
+</pre><img vspace="5" hspace="5" src="script_proof_example1_09.png" alt=""> <div><ol><li>Input is (1)(V,F).</li><li>Map (1)(V,F) to (2)(X,F) by solving Laplace with given weights and boundary P. Assume cone condition holds. Want to show it is a homeomorphism.</li><li>Extend the triangulation F-&gt;F'. Still don't know (4)(X,F') is a valid drawing. Also (3)(V,F') could have intersections.</li><li>Use Tutte (for graphs) to obtain a valid drawing (5)(U,F')</li><li>Construct weight and use Floater to obtain a homeomorphism (5)(U,F')-&gt;(6)(Z,F'). Moreover, by construction, Z=X.</li><li>Consequently (7)(U,F)-&gt;(8)(Z,F)=(2)(X,F) is a homeomorphism. This already implies that (2)(X,F) is a valid drawing. Remains to show that (1)(V,F)-&gt;(2)(X,F) is a homeomorphism.</li><li>Suffices to show that (1)(V,F)-&gt;(7)(X,F) is a homeomorphism. This follows from Whitney's embedding theorem for 3-connected graphs, by noting that the drawing (7)(U,F) is bounded by the same outer face as (1)(V,F).</li></ol></div><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Initialization
+clear
+close all
+addpath Functions Draw
+drawLabels = true;
+
+
+%% Input REPLACE_WITH_DASH_DASH (V,F)
+[V,F,P,W] = generateProblem_SmallExample();
+%%
+%  V - nx2 matrix of the coordinates of n vertices
+%  F - mx3 matrix where the i'th row contains the indices of the i'th triangle
+%  P - nx2 matrix with boundary contraints (prescribing the coordinates of boundary vertices)
+%         vertices that are not constrained (interior) are NaN
+%  W - nxn weighted adjacency matrix - the i,j entry is the weight of the edge connecting i to j (zero if no edge)
+%%
+% We *assume* that the problem is set up such that the cone condition
+% holds:  Given an embedding such that the cone condition holds, the goal  
+% of this code is to compute an extended graph + weights that enable the 
+% reduction to classic Tutte's proof.
+
+%%
+% Draw input
+drawInput();
+
+%% Compute embedding into P REPLACE_WITH_DASH_DASH (X,F)
+%%
+% Solve a Laplace linear system with weights W and boundary constraints P
+[X, G, bndInd] = solveDiscreteLaplace(W, P);
+%%
+%  X - embedding coordinates
+%  G - the action of the Laplacian at each vertex w.r.t. X
+%  bndInd - indicator vector of boundary vertices
+%%
+% Draw P, illustrate the cone condition and the target embedding
+drawBoundary();
+drawBoundaryWithForces();
+drawTargetEmbedding();
+
+
+%% Extend the triangulation REPLACE_WITH_DASH_DASH F -> F'
+% Extend the triangulation by adding ONLY new triangles (=edges)
+[F_add, P_ext] = extendTriangulation(P, find(bndInd));
+%%
+%  F_add - new triangles, obtained by triangulating the difference between
+%          the convex hull of P and P itself
+%  P_ext - the boundary of the extension = convex hull of P
+%%
+% Draw convex hull and new triangles
+drawBoundaryExtension();
+%%
+% The extended triangulation F' is then the concatenation of the original
+% triangles F and new triangles F_add:
+F_ext = [F;
+    F_add];
+%%
+% F' defines a 3-connected triagulation *graph* that has disk topology.
+%%
+% However, the drawing (V,F'), with the new triangles added to the input
+% triangulation, is *not* a valid drawing
+drawInputExtension();
+
+%% Compute an new embedding (drawing) of the extended triangulation REPLACE_WITH_DASH_DASH (U,F')
+% Use Tutte's graph embedding with uniform weights and boudnary vertices uniformly spaced on the circle
+W_ext_uniform = computeUniformWeights(F_ext);
+P_ext_uniform = mapPolygonToCircle(P_ext);
+%%
+% Solve a Laplace linear system with uniform weights and boudnary vertices uniformly spaced on the circle
+[U, ~, bndInd_ext] = solveDiscreteLaplace(W_ext_uniform, P_ext_uniform);
+%%
+% Draw (U,F')
+drawAuxiliaryEmbedding();
+
+
+%% Construct new weights on F' and embed REPLACE_WITH_DASH_DASH (Z,F')
+% Find weights on the extended triangulation for which the embedding (onto the convex hull)
+% coincides with the desired embedding (onto the non-convex polygon)
+W_ext_construction = constructWeightsOnExtension(bndInd, bndInd_ext,...
+    W, W_ext_uniform,...
+    X, P, G);
+%%
+% The construction follows the cases in the proof:
+%%
+%  - For interior vertices, we use the input weights as-is.
+%  - For boundary vertices we may choose any arbitrary weights, as these are constrained
+% The remaining vertices were boundary vertices of the original, unextended input domain, that became interior via the extension.
+%  - If such vertex was originally a boundary reflex vertex on the input mesh, the cone condition implies that proper weights exist for it in the extension.
+%  - If such vertex was originally a boundary convex vertex, the edges it connects to in the extension span more than 180 degrees, and thus proper weights also exist.
+%%
+% It is evident that the discrete Laplace equation (stemming from the Tutte’s embedding) defined by the above weights is exactly satisfied. The solution to Tutte’s embedding is unique, hence, solving it using these constructed weights, with the same boundary conditions will yield the exact given input.
+
+%%
+% Solve a Laplace linear system with weights constructed and boundary
+% constraints P'
+[Z, ~, ~] = solveDiscreteLaplace(W_ext_construction, P_ext);
+%%
+% Draw (Z,F')
+drawConstructedEmbedding();
+%%
+% By construction we have Z=X
+
+%% Summary
+drawSummary();
+%%
+% # Input is (1)(V,F).
+% # Map (1)(V,F) to (2)(X,F) by solving Laplace with given weights and
+% boundary P. Assume cone condition holds. Want to show it is a
+% homeomorphism.
+% # Extend the triangulation F->F'. Still don't know (4)(X,F') is a valid
+% drawing. Also (3)(V,F') could have intersections.
+% # Use Tutte (for graphs) to obtain a valid drawing (5)(U,F')
+% # Construct weight and use Floater to obtain a homeomorphism
+% (5)(U,F')->(6)(Z,F'). Moreover, by construction, Z=X.
+% # Consequently (7)(U,F)->(8)(Z,F)=(2)(X,F) is a homeomorphism. This
+% already implies that (2)(X,F) is a valid drawing. Remains to show that
+% (1)(V,F)->(2)(X,F) is a homeomorphism.
+% # Suffices to show that (1)(V,F)->(7)(X,F) is a homeomorphism. This
+% follows from Whitney's embedding theorem for 3-connected graphs, by
+% noting that the drawing (7)(U,F) is bounded by the same outer face as (1)(V,F).
+
+##### SOURCE END #####
+--></body></html>
